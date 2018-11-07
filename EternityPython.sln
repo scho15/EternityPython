@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2046
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "EternityPython", "EternityPython\EternityPython.pyproj", "{CFFD8068-BCBD-403E-AEFA-5CF6B627C358}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CFFD8068-BCBD-403E-AEFA-5CF6B627C358}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFFD8068-BCBD-403E-AEFA-5CF6B627C358}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B4E9D5F1-5FB6-4127-A4A0-EDDFD5962D51}
+	EndGlobalSection
+EndGlobal
