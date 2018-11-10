@@ -44,6 +44,7 @@ class CreateTileSet:
        tileList.append((1,2,0,0))
        tileList.append((3,14,3,0))
        tileList.insert(6,(3,16,2,0))
+       print(tileList[1])
        """
        tile[ 5 ] = new EternityTile( 5, 3, 14, 3, 0 );
        tile[ 6 ] = new EternityTile( 6, 3, 16, 2, 0 );
