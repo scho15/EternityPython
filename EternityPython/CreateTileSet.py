@@ -6,6 +6,7 @@ usedTiles = [] # List of tiles used
 tilePatternList = [] # List of tiles with tile patterns
 tilePatternSet = set()
 consecutivePatterns = [] # List of tiles with two consecutive patterns
+unexploredTiles = [] # List of tiles which have not been explored
 
 def createTile():
     # 0: Grey edge tile
@@ -300,7 +301,7 @@ def findPatternMatches():
                     tilePatternSet.add(y)
         tilePatternList.append(tilePatternSet.copy())
         tilePatternSet.clear()
-        print(f"Set of tiles with tile pattern {x} is {tilePatternList[x]}")
+        # print(f"Set of tiles with tile pattern {x} is {tilePatternList[x]}")
 
 def findConsecutivePatternMatches(x, y):
         consecutivePatterns.clear()
@@ -334,24 +335,38 @@ def rotateTile(x):
     tileList[x][1] = temp
 
 def startMatching():
+    iteration = 1
     findConsecutivePatternMatches(0,0)
     # Selecting first tile
     matchTile = consecutivePatterns[0]
+    consecutivePatterns.pop(0)
+    unexploredTiles.append(consecutivePatterns.copy())
+    print(f"Unexplored tiles at iteration {iteration} is {unexploredTiles}")
     # Rotate tile to ensure edges are correctly aligned
     while (tileList[matchTile][2] != 0 & tileList[matchTile][1] == 0):
         rotateTile(matchTile)
     print(f"Rotation to ensure S and W aligned so we have tile {matchTile} now at {tileList[matchTile]}")
     usedTiles.append(matchTile)
     print(f"Used tiles list is now {usedTiles}")
-    count = 0
+    iteration = 2
     eastMatch = 0
-    while (matchTile != 0 and count < 15):
+    firstMatch = 0
+    secondMatch = 0
+    while (matchTile != 0 and iteration < 32):
         # Next matches as a list
-        if (count != 14):
+        if (iteration <= 16):
             findConsecutivePatternMatches(0,tileList[matchTile][1])
-        if (count == 14):
+        if (iteration == 16):
             findThreeConsecutivePatternMatches(0, 0, tileList[matchTile][1])
             print(f"Matching tile list at corner is {consecutivePatterns}")
+        if (iteration == 17):
+            findConsecutivePatternMatches(tileList[usedTiles[0]][0],0)
+        if (iteration >= 18):
+            firstMatch = tileList[usedTiles[iteration - 17]][0]
+            print(f'Edge to match on the South is {firstMatch}')
+            secondMatch = tileList[usedTiles[iteration - 2]][1]
+            print(f'Edge to match on the West is {secondMatch}')
+            findConsecutivePatternMatches(firstMatch,secondMatch)
         # Remove items in usedTiles that have already been used
         for item in usedTiles:
             if item in consecutivePatterns[:]:
@@ -359,24 +374,53 @@ def startMatching():
         print(f"Matching tiles list after used tile purge is {consecutivePatterns}")
         # Remove items that are corner or edge tiles that won't fit
         for item in consecutivePatterns[:]:
-                if (item <= 4 and count != 14):
+                if (item <= 4 and iteration != 16):
                     consecutivePatterns.remove(item)
-                elif (count == 14 and item > 4):
+                elif (iteration == 16 and item > 4):
                     consecutivePatterns.remove(item)
         print(f"Matching tiles list after range purge is {consecutivePatterns}")
         # Take first eligible tile (for breadth first search would need to print them all out
-        matchTile = consecutivePatterns[0]
-        # More work needed for corner tile with three matches already
-        matchConfiguration = tileList[matchTile]
-        print(f"Selecting tile {matchTile} which currently has NESW configuration of {matchConfiguration}")
-        # Rotate tile to ensure edges are correctly aligned
-        while (tileList[matchTile][2] != 0 & tileList[matchTile][1] == 0):
-            rotateTile(matchTile)
-        print(f"Rotation to ensure S and W aligned so we have tile {matchTile} now at {tileList[matchTile]}")
-        # Adding to used tile list
-        usedTiles.append(matchTile)
-        print(f"Used tiles list is now {usedTiles}")
-        count +=1
+        if (len(consecutivePatterns) != 0):
+            matchTile = consecutivePatterns[0]
+            consecutivePatterns.pop(0)
+            unexploredTiles.append(consecutivePatterns.copy())
+            print(f"Unexplored tiles at iteration {iteration} is {unexploredTiles}")
+            # More work needed for corner tile with three matches already
+            matchConfiguration = tileList[matchTile]
+            print(f"Selecting tile {matchTile} which currently has NESW configuration of {matchConfiguration}")
+            # Rotate tile to ensure edges are correctly aligned
+            if (iteration <= 16):
+                while (tileList[matchTile][2] != 0):
+                    rotateTile(matchTile)
+                    print(f"Rotation to ensure edges aligned so we have tile {matchTile} now at {tileList[matchTile]}")
+            if (iteration == 16):
+                while (tileList[matchTile][2] != 0 and tileList[matchTile][1] != 0):
+                    rotateTile(matchTile)
+                    print(f"Rotation to ensure corners aligned so we have tile {matchTile} now at {tileList[matchTile]}")
+            if (iteration == 17):
+                while (tileList[matchTile][3] != 0):
+                    rotateTile(matchTile)
+                    print(f"Rotation to ensure corners aligned so we have tile {matchTile} now at {tileList[matchTile]}")
+            if (iteration >= 18):
+                while (tileList[matchTile][2] != firstMatch and tileList[matchTile][1] != secondMatch):
+                    print(f'Relevant match is at {tileList[matchTile][2]}')
+                    rotateTile(matchTile)
+                    print(f"Rotation to ensure edges aligned so we have tile {matchTile} now at {tileList[matchTile]}")
+            # Adding to used tile list
+            usedTiles.append(matchTile)
+            print(f"Used tiles list is now {usedTiles}")
+            iteration +=1
+        else:
+            print(f'No more solutions available so need to implement backtracking!')
+            while (len(unexploredTiles[-1])==0):
+                print(f'Removing the last iteration that was empty')
+                unexploredTiles.pop()
+                print(f'The last unexploredTile is now {unexploredTiles[-1]}')
+                iteration -=1
+                print(f'Used tile list was {usedTiles}')
+                usedTiles.pop()
+                print(f'Used tile list  {usedTiles}')
+            break   
   
 
 def eternityStart():
