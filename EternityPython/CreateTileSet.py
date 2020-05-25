@@ -366,23 +366,29 @@ def startMatching():
     firstMatch = 0
     secondMatch = 0
     exploredTiles.append([])
-    while (matchTile != 0 and iteration <= 31):
+    count = 0
+    maxIteration = 1
+
+    while (matchTile != 0 and iteration <= 80):
         # Next matches as a list
-        print(f"\nIteration {iteration}")
+        count += 1
+        if (iteration > maxIteration):
+            maxIteration = iteration
+        print(f"\nIteration {iteration} and count is {count} with maximum iteration reached of {maxIteration}")
         if (iteration <= 16):
             consecutivePatterns = findConsecutivePatternMatches(0,tileList[matchTile][1])
         if (iteration == 16):
             consecutivePatterns = findThreeConsecutivePatternMatches(0, 0, tileList[matchTile][1])
             print(f"Matching tile list at corner is {consecutivePatterns}")
-        if (iteration == 17 or iteration == 33):
+        if (iteration > 16 and iteration%16 == 1):
             consecutivePatterns = findConsecutivePatternMatches(tileList[usedTiles[iteration-17]][0],0)
-        if (iteration >= 18 and iteration != 32):
+        if (iteration > 16 and iteration%16 != 0 and iteration%16 != 1):
             firstMatch = tileList[usedTiles[iteration - 17]][0]
             print(f'Edge to match on the South is {firstMatch}')
             secondMatch = tileList[usedTiles[iteration - 2]][1]
             print(f'Edge to match on the West is {secondMatch}')
             consecutivePatterns = findConsecutivePatternMatches(firstMatch,secondMatch)
-        if (iteration == 32):
+        if (iteration > 16 and iteration%16 == 0):
             firstMatch = tileList[usedTiles[iteration - 17]][0]
             print(f'Edge to match on the South is {firstMatch}')
             secondMatch = tileList[usedTiles[iteration - 2]][1]
@@ -400,6 +406,9 @@ def startMatching():
                     consecutivePatterns.remove(item)
                 elif (iteration == 16 and item > 4):
                     consecutivePatterns.remove(item)
+                if (item <= 60 and iteration>16):
+                    if (iteration%16 > 1):
+                        consecutivePatterns.remove(item)
         print(f"Matching tiles list after used tile purge is {consecutivePatterns}")
         if (len(exploredTiles) <= iteration - 1):
             exploredTiles.append([])
@@ -430,11 +439,15 @@ def startMatching():
                 while (tileList[matchTile][2] != 0 and tileList[matchTile][1] != 0):
                     rotateTile(matchTile)
                     print(f"Rotation to ensure corners aligned so we have tile {matchTile} now at {tileList[matchTile]}")
-            if (iteration == 17):
+            if (iteration > 16 and iteration%16 == 1):
                 while (tileList[matchTile][3] != 0):
                     rotateTile(matchTile)
                     print(f"Rotation to ensure edge aligned so we have tile {matchTile} now at {tileList[matchTile]}")
-            if (iteration >= 18):
+            elif (iteration > 16 and iteration%16 == 0):
+                while (tileList[matchTile][1] != 0):
+                    rotateTile(matchTile)
+                    print(f"Rotation to ensure edge aligned so we have tile {matchTile} now at {tileList[matchTile]}")
+            elif (iteration > 16):
                 while (tileList[matchTile][2] != firstMatch and tileList[matchTile][1] != secondMatch):
                     print(f'Relevant match is at {tileList[matchTile][2]}')
                     rotateTile(matchTile)
