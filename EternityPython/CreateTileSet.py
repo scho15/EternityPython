@@ -343,40 +343,21 @@ def rotateTile(x):
 
 def startMatching(cutoff):
     start = time.time()
-    # Need 3 different elements - unexplored path, explored path and currentPath/usedtiles
-    # If only the usedTiles/cuurenpath is used, previously ruled out sequences comes back in play creating repeating loops
-    # Explored only adds used tiles when there are no further sequences so need to make sure they are added at the right place
-    iteration = 1
-    #print(f"Iteration {iteration}")
-    # Find tiles with consecutive 0 and 0 patterns i.e. corners
-    consecutivePatterns = findConsecutivePatternMatches(0,0)
-    unexploredTiles.append(consecutivePatterns.copy())
-    exploredTiles.append([])
-    #print(f"Unexplored tiles at iteration {iteration} is {unexploredTiles}")
-    # Choose first tile as match (random would be an alternative)
-    matchTile = unexploredTiles[0][0]
-    unexploredTiles[0].pop(0)
-    # Rotate tile to ensure edges are correctly aligned
-    while (tileList[matchTile][2] != 0 & tileList[matchTile][1] == 0):
-        rotateTile(matchTile)
-    #print(f"Match tile {matchTile} selected and appended to usedTiles")
-    #print(f"Rotation to ensure S and W aligned so we have tile {matchTile} now at {tileList[matchTile]}")
-    usedTiles.append(matchTile)
-    #print(f"Used tiles list (also containing patterns in correct rotation) is now {usedTiles}")
+    # Need 3 different elements - unexplored path, explored path and currentPath/usedtiles        
 
-    iteration = 2
-    eastMatch = 0
-    firstMatch = 0
-    secondMatch = 0
+    iteration = 1
     exploredTiles.append([])
     count = 0
-    maxIteration = 1
+    maxIteration = 0
 
-    while (matchTile != 0 and iteration <= cutoff):
+    while (iteration <= cutoff):
         # Next matches as a list
         count += 1
         if (iteration <= 16):
-            consecutivePatterns = findConsecutivePatternMatches(0,tileList[usedTiles[iteration-2]][1])
+            if (iteration == 1):
+                consecutivePatterns = findConsecutivePatternMatches(0,0)
+            else:
+                consecutivePatterns = findConsecutivePatternMatches(0,tileList[usedTiles[iteration-2]][1])
             # Temporary - to avoid getting stuck on iteration 34 for first choice model
             if ((iteration == 6) and (16 in consecutivePatterns)):
                 consecutivePatterns.remove(16)
@@ -471,7 +452,7 @@ def startMatching(cutoff):
                 consecutivePatterns.remove(item)
         # Remove items that are corner or edge tiles that won't fit
         for item in consecutivePatterns[:]:
-                if (item <= 4 and iteration != 16):
+                if (item <= 4 and (iteration%16 != 1 and iteration%16 != 0)):
                     consecutivePatterns.remove(item)
                 elif (iteration == 16 and item > 4):
                     consecutivePatterns.remove(item)
@@ -499,9 +480,13 @@ def startMatching(cutoff):
             #print(f"Selecting tile {matchTile} which currently has NESW configuration of {matchConfiguration}") # Optional Line 9
             # Rotate tile to ensure edges are correctly aligned - originally screwed up as used AND rather than OR below
             if (iteration < 16):
-                while (tileList[matchTile][2] != 0):
-                    rotateTile(matchTile)
-                    #print(f"Rotation to ensure edges aligned so we have tile {matchTile} now at {tileList[matchTile]}")
+                if (iteration != 1):
+                    while (tileList[matchTile][2] != 0):
+                        rotateTile(matchTile)
+                        #print(f"Rotation to ensure edges aligned so we have tile {matchTile} now at {tileList[matchTile]}")
+                else:
+                    while (tileList[matchTile][2] != 0 or tileList[matchTile][3] != 0):
+                        rotateTile(matchTile)
             if (iteration == 16):
                 #print(f"\nConsidering the rotation of {matchTile} at iteration {iteration} which is currently {tileList[matchTile]}")
                 while (tileList[matchTile][2] != 0 or tileList[matchTile][1] != 0):
@@ -572,7 +557,7 @@ def startMatching(cutoff):
 
 def eternityStart():
     # Input iteration at which cutoff should occur
-    cut = 220
+    cut = 192
     createTile()
     findPatternMatches()
     startMatching(cut)
