@@ -552,12 +552,12 @@ def startMatching(cutoff):
                 #print(f"Replacing empty option with unexplored options {consecutivePatterns}") # Optional Line 17
                 unexploredTiles.pop() 
         end = time.time()
-        if ((iteration == maxIteration and maxCheck == True) or count%5000000 == 0):
+        if ((iteration == maxIteration and maxCheck == True) or count%25000000 == 0):
             print(f"\nUsed tiles list at count {count} is now \n{usedTiles}\n and iteration reached was {maxIteration}")
             print(f"Unexplored tiles at iteration {iteration} are \n{unexploredTiles}")
             print(f"Explored tiles at iteration {iteration} are \n{exploredTiles}")
             for i, val in enumerate(unexploredTiles):
-                if i >= 0 and i <= 50:
+                if i >= 75 and i <= 100:
                     print(f"{i+1}\t{usedTiles[i]} {val} {exploredTiles[i]}")
             print(f"Time taken in seconds was {end - start:.3f}")
             maxCheck = False # Optional Insert Line 18 to get all iterations
@@ -572,7 +572,7 @@ def startMatching(cutoff):
 
 def eternityStart():
     # Input iteration at which cutoff should occur
-    cut = 170
+    cut = 220
     createTile()
     findPatternMatches()
     startMatching(cut)
