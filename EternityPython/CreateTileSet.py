@@ -1,4 +1,5 @@
 import time
+import random
 
 TILE_SET_SIZE = 256
 EDGE_SET_SIZE = 60
@@ -359,9 +360,9 @@ def startMatching(cutoff):
             else:
                 consecutivePatterns = findConsecutivePatternMatches(0,tileList[usedTiles[iteration-2]][1])
             # Temporary - to avoid getting stuck on iteration 34 for first choice model
-            if ((iteration == 6) and (16 in consecutivePatterns)):
-                consecutivePatterns.remove(16)
-                print(F"Temporary: Tile 16 has been removed at iteration 6 to avoid getting stuck")
+            #if ((iteration == 6) and (16 in consecutivePatterns)):
+            #    consecutivePatterns.remove(16)
+            #    print(F"Temporary: Tile 16 has been removed at iteration 6 to avoid getting stuck")
         if (iteration == 16):
             consecutivePatterns = findThreeConsecutivePatternMatches(0, 0, tileList[usedTiles[iteration-2]][1])
             #print(f"Matching tile list at corner is {consecutivePatterns}") # Optional Line 1
@@ -452,13 +453,10 @@ def startMatching(cutoff):
                 consecutivePatterns.remove(item)
         # Remove items that are corner or edge tiles that won't fit
         for item in consecutivePatterns[:]:
-                if (item <= 4 and (iteration%16 != 1 and iteration%16 != 0)):
-                    consecutivePatterns.remove(item)
-                elif (iteration == 16 and item > 4):
-                    consecutivePatterns.remove(item)
-                if (item <= 60 and iteration>16):
-                    if (iteration%16 > 1):
-                        consecutivePatterns.remove(item)
+            if (item <= 60 and iteration > 16 and iteration%16 != 0 and iteration%16 != 1):
+                consecutivePatterns.remove(item)
+            elif (item <=4 and iteration != 1 and iteration != 16 and iteration != 241 and iteration != 256):
+                consecutivePatterns.remove(item)
         #print(f"Matching tiles list after used tile purge is {consecutivePatterns}") # Optional Line 7
         if (len(exploredTiles) <= iteration - 1):
             exploredTiles.append([])
@@ -473,8 +471,10 @@ def startMatching(cutoff):
         #print(f"Matching tiles list after explored tile purge is {consecutivePatterns}") # Optional Line 8
         # Take first eligible tile (for breadth first search would need to print them all out
         if (len(consecutivePatterns) != 0):
-            matchTile = consecutivePatterns[0]
-            consecutivePatterns.pop(0)
+            # Migrating to random
+            choice = random.randint(0,len(consecutivePatterns) - 1)
+            matchTile = consecutivePatterns[choice]
+            consecutivePatterns.pop(choice)
             unexploredTiles.append(consecutivePatterns.copy())
             matchConfiguration = tileList[matchTile]
             #print(f"Selecting tile {matchTile} which currently has NESW configuration of {matchConfiguration}") # Optional Line 9
@@ -557,7 +557,7 @@ def startMatching(cutoff):
 
 def eternityStart():
     # Input iteration at which cutoff should occur
-    cut = 192
+    cut = 220
     createTile()
     findPatternMatches()
     startMatching(cut)
